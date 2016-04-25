@@ -18,7 +18,7 @@ namespace ShoppingListOOP
         //    new Product() { name="socks", price=11.11M, category="clothes" },
         //};
 
-        public void Print()
+        public void Run()
         {
 
             int choice = 0;
@@ -43,20 +43,20 @@ namespace ShoppingListOOP
                         SeeList();
                         break;
                     case 4:
-
+                        SeeList(cart.Filter(new PriceRangeFilter(GetPriceRange())));
                         //ListByPriceRange(shoppingList);
                         break;
                     case 5:
-                        SeeList(cart.Filter(new CategoryFilter("food")));
+                        SeeList(cart.Filter(new CategoryFilter(GetCategoryFilter())));
                         //ListByCategory(shoppingList);
                         break;
                     case 6:
                         SaveToFile();
                         // Cart.SaveToFile(shoppingList);
                         break;
-                    //case 7:
-
-                    //    break;
+                    case 7:
+                        LoadFromFile();
+                        break;
                     case 8:
                         Exit();
                         break;
@@ -71,13 +71,18 @@ namespace ShoppingListOOP
         {
             cart.SaveToFile();
             if (cart.SaveToFile())
-            {
                 Console.WriteLine("File saved successfully.");
-            }
             else
-            {
                 Console.WriteLine("File not saved.");
-            }
+        }
+
+        private void LoadFromFile()
+        {
+            //cart.SaveToFile();
+            if (cart.LoadFromFile())
+                Console.WriteLine("Data from file loaded successfully.");
+            else
+                Console.WriteLine("Data loading failure.");
         }
 
         private void RemoveItem()
@@ -86,7 +91,7 @@ namespace ShoppingListOOP
             string productToRemove = Console.ReadLine();
             bool productRemoved = false;
 
-            foreach (Product item in cart.shoppingList)
+            foreach (Product item in cart.getList())
             {
                 if (item.name == productToRemove)
                 {
@@ -97,20 +102,8 @@ namespace ShoppingListOOP
                 }
             }
             if (!productRemoved)
-            {
                 Console.WriteLine("Entered product name does not exist in the shopping cart!");
-            }
         }
-
-        //private void SeeList(List<Product> shoppingList)
-        //{
-        //    Console.WriteLine("\nHere is the shopping list: ");
-
-        //    foreach (Product item in shoppingList)
-        //    {
-        //        Console.WriteLine(item.name);
-        //    }
-        //}
 
         private void SeeList()
         {
@@ -118,15 +111,20 @@ namespace ShoppingListOOP
             Console.WriteLine("\nHere is the shopping list: ");
 
             foreach (Product item in cart.getList())
-            {
                 Console.WriteLine(item.name);
-            }
+        }
+
+        private void SeeList(object v)
+        {
+            Console.WriteLine("\nHere is the shopping list filtered by price: ");
+
+            foreach (Product item in cart.getList())
+                Console.WriteLine(item.name);
         }
 
         private void AddItem()
         {
             Product product = new Product();
-
 
             Console.Write("\nEnter the name of the product to add to the shopping cart: ");
             product.name = Console.ReadLine();
@@ -143,44 +141,50 @@ namespace ShoppingListOOP
             Console.WriteLine("Name:\t\t{0}\nPrice:\t\t{1}\nCategory:\t{2}", product.name, product.price, product.category);
         }
 
-
-        // SeeList(cart.Filter(new PriceRangeFilter(1,10));
-        private void ListByPriceRange(List<Product> shoppingList)
+        private Tuple<decimal, decimal> GetPriceRange()
         {
             Console.Write("\nEnter minimum price: ");
             decimal minPrice = decimal.Parse(Console.ReadLine());
 
             Console.Write("\nEnter maximum price: ");
             decimal maxPrice = decimal.Parse(Console.ReadLine());
-
-            List<Product> priceRangeList = new List<Product>();
-
-            foreach (Product item in shoppingList)
-            {
-                if (item.price >= minPrice && item.price <= maxPrice)
-                {
-                    priceRangeList.Add(item);
-                }
-            }
-            // SeeList(priceRangeList);
+            return Tuple.Create(minPrice, maxPrice);
         }
 
-        // SeeList(cart.Filter(new CategoryFilter("fruit"));  OOD Visitor pattern
-        public void ListByCategory(List<Product> shoppingList)
+        //// SeeList(cart.Filter(new PriceRangeFilter(1,10));
+        //private void ListByPriceRange(List<Product> shoppingList)
+        //{
+        //    Console.Write("\nEnter minimum price: ");
+        //    decimal minPrice = decimal.Parse(Console.ReadLine());
+
+        //    Console.Write("\nEnter maximum price: ");
+        //    decimal maxPrice = decimal.Parse(Console.ReadLine());
+
+        //    List<Product> priceRangeList = new List<Product>();
+
+        //    foreach (Product item in shoppingList)
+        //        if (item.price >= minPrice && item.price <= maxPrice)
+        //            priceRangeList.Add(item);
+        //    // SeeList(priceRangeList);
+        //}
+        public string GetCategoryFilter()
         {
             Console.Write("\nEnter the category name you wish to see: ");
-            string categoryName = Console.ReadLine();
-            List<Product> categoryList = new List<Product>();
-
-            foreach (Product item in shoppingList)
-            {
-                if (item.category == categoryName)
-                {
-                    categoryList.Add(item);
-                }
-            }
-            // SeeList(categoryList);
+            return Console.ReadLine();
         }
+
+        //// SeeList(cart.Filter(new CategoryFilter("fruit"));  OOD Visitor pattern
+        //public void ListByCategory(List<Product> shoppingList)
+        //{
+        //    Console.Write("\nEnter the category name you wish to see: ");
+        //    string categoryName = Console.ReadLine();
+        //    List<Product> categoryList = new List<Product>();
+
+        //    foreach (Product item in shoppingList)
+        //        if (item.category == categoryName)
+        //            categoryList.Add(item);
+        //    // SeeList(categoryList);
+        //}
 
         private void Exit()
         {
@@ -198,10 +202,8 @@ namespace ShoppingListOOP
             Console.WriteLine("4 - List products within a price range");
             Console.WriteLine("5 - List products from a category");
             Console.WriteLine("6 - Save the shopping list into a text file");
-            Console.WriteLine("7 - Load a shopping list from a text file (Sorry, not working)");
+            Console.WriteLine("7 - Load a shopping list from a text file");
             Console.WriteLine("8 - Exit");
         }
     }
-
-  
 }

@@ -11,7 +11,7 @@ namespace ShoppingListOOP
         static void Main(string[] args)
         {
             ConsoleShoppingList consoleShoppingList = new ConsoleShoppingList();
-            consoleShoppingList.Print();
+            consoleShoppingList.Run();
         }
     }
 

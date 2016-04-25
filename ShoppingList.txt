@@ -2,3 +2,4 @@ milk	0,79	food
 bread	2	food
 bulbs	6,49	household goods
 socks	11,11	clothes
+lâcis	1,2	toys

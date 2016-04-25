@@ -9,6 +9,9 @@ namespace ShoppingListOOP
 {
     class Cart
     {
+        //string path = @"D:\OneDrive\Koplietošanai\CSharp\ShoppingListOOP\ShoppingList.txt";
+        string path = @"D:\Dokumenti\CSharp\ShoppingList.txt";
+
         private List<Product> shoppingList = new List<Product>()
         {
             new Product() { name="milk", price=.79M, category="food" },
@@ -23,53 +26,33 @@ namespace ShoppingListOOP
             return shoppingList;
         }
 
-
-        //internal static void AddItem(List<Product> shoppingList)
-        //{            
-        //    shoppingList.Add(product);            
-        //}
-
-        //public void RemoveItemFromCart(List<Product> shoppingList)
-        //{
-        //    Console.Write("\nEnter the name of the product to remove from the shopping cart: ");
-        //    string productToRemove = Console.ReadLine();
-        //    bool productRemoved = false;
-
-        //    foreach (Product item in shoppingList)
-        //    {
-        //        if (item.name == productToRemove)
-        //        {
-        //            shoppingList.Remove(item);
-        //            Console.WriteLine("Product '{0}' removed.", item.name);
-        //            productRemoved = true;
-        //            return;
-        //        }
-        //    }
-        //    if (!productRemoved)
-        //    {
-        //        Console.WriteLine("Entered product name does not exist in the shopping cart!");
-        //    }
-        //}
-
-        //internal static void SaveToFile(List<Product> shoppingList)
-        //{
-        //    string path = @"D:\OneDrive\Koplietošanai\CSharp\ShoppingListOOP\ShoppingList.txt";
-        //    File.WriteAllText(path, shoppingList[0].name + "\t" + shoppingList[0].price + "\t" + shoppingList[0].category + Environment.NewLine);
-        //    for (int i = 1; i < shoppingList.Count; i++)
-        //    {
-        //        File.AppendAllText(path, shoppingList[i].name + "\t" + shoppingList[i].price + "\t" + shoppingList[i].category + Environment.NewLine);
-        //    }
-        //}
-
         internal bool SaveToFile()
         {
-            string path = @"D:\OneDrive\Koplietošanai\CSharp\ShoppingListOOP\ShoppingList.txt";
             File.WriteAllText(path, shoppingList[0].name + "\t" + shoppingList[0].price + "\t" + shoppingList[0].category + Environment.NewLine);
             for (int i = 1; i < shoppingList.Count; i++)
-            {
                 File.AppendAllText(path, shoppingList[i].name + "\t" + shoppingList[i].price + "\t" + shoppingList[i].category + Environment.NewLine);
-            }
             return true;
+        }
+
+        internal bool LoadFromFile()
+        {            
+            if (File.Exists(path))
+            {
+                string[] textFromFile = File.ReadAllLines(path);
+                var loadedList = new List<Product>();
+                for (int i = 0; i < textFromFile.Length; i++)
+                {
+                    string[] tempTextArray = textFromFile[i].Split('\t');
+                    Product product = new Product();
+                    product.name = tempTextArray[0];
+                    product.price = decimal.Parse(tempTextArray[1]);
+                    product.category = tempTextArray[2];
+                    loadedList.Add(product);
+                }
+                shoppingList = loadedList;
+                return true;
+            }
+            else return false;
         }
 
         public void AddItemToCart(Product product)
@@ -82,5 +65,61 @@ namespace ShoppingListOOP
             shoppingList.Remove(item);
         }
 
+        internal object Filter(IVisitor visitor)
+        {
+            List<Product> list = new List<Product>(); //pagaidu
+
+            return list;
+        }
+    }
+
+    public class PriceRangeFilter : IVisitor
+    {
+        private Tuple<decimal, decimal> priceRangeFilter;
+
+        public PriceRangeFilter(Tuple<decimal, decimal> priceRangeFilter)
+        {
+            this.priceRangeFilter = priceRangeFilter;
+        }
+
+        //public void Visit()
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        public void Visit(CategoryFilter cf) { }
+
+        public void Visit(PriceRangeFilter prf)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class CategoryFilter : IVisitor
+    {
+        private string categoryFilter;
+
+        public CategoryFilter(string categoryFilter)
+        {
+            this.categoryFilter = categoryFilter;
+        }
+
+        //public void Visit()
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        public void Visit(CategoryFilter cf)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Visit(PriceRangeFilter prf) { }
+    }
+
+    public interface IVisitor
+    {
+        void Visit(PriceRangeFilter prf);
+        void Visit(CategoryFilter cf);
     }
 }
