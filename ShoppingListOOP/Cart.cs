@@ -28,14 +28,15 @@ namespace ShoppingListOOP
 
         internal bool SaveToFile()
         {
-            File.WriteAllText(path, shoppingList[0].name + "\t" + shoppingList[0].price + "\t" + shoppingList[0].category + Environment.NewLine);
+            var utf8 = new UTF8Encoding();            
+            File.WriteAllText(path, shoppingList[0].name + "\t" + shoppingList[0].price + "\t" + shoppingList[0].category + Environment.NewLine, utf8);
             for (int i = 1; i < shoppingList.Count; i++)
-                File.AppendAllText(path, shoppingList[i].name + "\t" + shoppingList[i].price + "\t" + shoppingList[i].category + Environment.NewLine);
+                File.AppendAllText(path, shoppingList[i].name + "\t" + shoppingList[i].price + "\t" + shoppingList[i].category + Environment.NewLine, utf8);
             return true;
         }
 
         internal bool LoadFromFile()
-        {            
+        {
             if (File.Exists(path))
             {
                 string[] textFromFile = File.ReadAllLines(path);
@@ -65,61 +66,56 @@ namespace ShoppingListOOP
             shoppingList.Remove(item);
         }
 
-        internal object Filter(IVisitor visitor)
+        internal List<Product> Filter(IFilter filter)
         {
-            List<Product> list = new List<Product>(); //pagaidu
-
-            return list;
+            List<Product> result = new List<Product>();
+            foreach (Product item in shoppingList)
+                if (filter.isValid(item))
+                {
+                    result.Add(item);
+                }
+            return result;
         }
     }
 
-    public class PriceRangeFilter : IVisitor
+    public class PriceRangeFilter : IFilter
     {
-        private Tuple<decimal, decimal> priceRangeFilter;
+        private Tuple<decimal, decimal> priceRange;
 
-        public PriceRangeFilter(Tuple<decimal, decimal> priceRangeFilter)
+        public PriceRangeFilter(Tuple<decimal, decimal> priceRange)
         {
-            this.priceRangeFilter = priceRangeFilter;
+            this.priceRange = priceRange;
         }
 
-        //public void Visit()
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        public void Visit(CategoryFilter cf) { }
-
-        public void Visit(PriceRangeFilter prf)
+        public bool isValid(Product item)
         {
-            throw new NotImplementedException();
+            //Console.WriteLine(priceRange.Item1);
+            //Console.WriteLine(priceRange.Item2);
+            if (item.price >= priceRange.Item1 && item.price <= priceRange.Item2)
+                return true;
+            return false;
         }
     }
 
-    public class CategoryFilter : IVisitor
+    public class CategoryFilter : IFilter
     {
-        private string categoryFilter;
+        private string category;
 
-        public CategoryFilter(string categoryFilter)
+        public CategoryFilter(string category)
         {
-            this.categoryFilter = categoryFilter;
+            this.category = category;
         }
 
-        //public void Visit()
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        public void Visit(CategoryFilter cf)
+        public bool isValid(Product item)
         {
-            throw new NotImplementedException();
+            if (item.category == category)
+                return true;
+            return false;
         }
-
-        public void Visit(PriceRangeFilter prf) { }
     }
 
-    public interface IVisitor
+    public interface IFilter
     {
-        void Visit(PriceRangeFilter prf);
-        void Visit(CategoryFilter cf);
+        bool isValid(Product item);
     }
 }

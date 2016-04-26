@@ -9,15 +9,7 @@ namespace ShoppingListOOP
     public class ConsoleShoppingList
     {
         Cart cart = new Cart();
-        //List<Product> shoppingList = new List<Product>
-        //{
-        //    new Product() { name="milk", price=.79M, category="food" },
-        //    new Product() { name="beer", price=1.45M, category="alcoholic beverages" },
-        //    new Product() { name="bread", price=2M, category="food" },
-        //    new Product() { name="bulbs", price=6.49M, category="household goods" },
-        //    new Product() { name="socks", price=11.11M, category="clothes" },
-        //};
-
+        
         public void Run()
         {
 
@@ -38,21 +30,17 @@ namespace ShoppingListOOP
                     case 2:
                         RemoveItem();
                         break;
-                    case 3:
-                        //SeeList(shoppingList);
+                    case 3:                        
                         SeeList();
                         break;
                     case 4:
-                        SeeList(cart.Filter(new PriceRangeFilter(GetPriceRange())));
-                        //ListByPriceRange(shoppingList);
+                        SeeList(cart.Filter(new PriceRangeFilter(GetPriceRange())));                        
                         break;
                     case 5:
-                        SeeList(cart.Filter(new CategoryFilter(GetCategoryFilter())));
-                        //ListByCategory(shoppingList);
+                        SeeList(cart.Filter(new CategoryFilter(GetCategory())));
                         break;
                     case 6:
                         SaveToFile();
-                        // Cart.SaveToFile(shoppingList);
                         break;
                     case 7:
                         LoadFromFile();
@@ -77,8 +65,7 @@ namespace ShoppingListOOP
         }
 
         private void LoadFromFile()
-        {
-            //cart.SaveToFile();
+        {            
             if (cart.LoadFromFile())
                 Console.WriteLine("Data from file loaded successfully.");
             else
@@ -111,14 +98,14 @@ namespace ShoppingListOOP
             Console.WriteLine("\nHere is the shopping list: ");
 
             foreach (Product item in cart.getList())
-                Console.WriteLine(item.name);
+                Console.WriteLine(item.name+"\t"+item.price+"\t"+item.category);
         }
 
-        private void SeeList(object v)
+        private void SeeList(List<Product> filteredList)
         {
             Console.WriteLine("\nHere is the shopping list filtered by price: ");
 
-            foreach (Product item in cart.getList())
+            foreach (Product item in filteredList)
                 Console.WriteLine(item.name);
         }
 
@@ -152,6 +139,7 @@ namespace ShoppingListOOP
         }
 
         //// SeeList(cart.Filter(new PriceRangeFilter(1,10));
+
         //private void ListByPriceRange(List<Product> shoppingList)
         //{
         //    Console.Write("\nEnter minimum price: ");
@@ -167,13 +155,14 @@ namespace ShoppingListOOP
         //            priceRangeList.Add(item);
         //    // SeeList(priceRangeList);
         //}
-        public string GetCategoryFilter()
+        public string GetCategory()
         {
             Console.Write("\nEnter the category name you wish to see: ");
             return Console.ReadLine();
         }
 
         //// SeeList(cart.Filter(new CategoryFilter("fruit"));  OOD Visitor pattern
+
         //public void ListByCategory(List<Product> shoppingList)
         //{
         //    Console.Write("\nEnter the category name you wish to see: ");
